@@ -35,8 +35,10 @@ resources = {
 }
 
 
-# Refills the machine's resources, and collects money such that initial state is reinstated
 def refill_collect():
+    """
+    Refills the machine's resources, and collects money such that initial state is reinstated
+    """
     global resources
     resources = {
         "water": 300,
@@ -47,9 +49,12 @@ def refill_collect():
     print("Machine filled up with resources, money collected.")
 
 
-# Checks if there are enough resources, if so return True, otherwise prints the first resource that
-# is missing and returns False
 def resources_ok(choice):
+    """
+    Checks if there are enough resources, if so return True, otherwise prints the first resource that
+    is missing and returns False
+    :param choice:
+    """
     if resources["water"] < MENU[choice]["ingredients"]["water"]:
         print("\tSorry there is not enough water.")
         return False
@@ -62,16 +67,22 @@ def resources_ok(choice):
     return True
 
 
-# Print report that shows the current resource values
 def report():
+    """
+    Print report that shows the current resource values
+    """
     print("\tWater: {water}ml".format(**resources))
     print("\tMilk: {milk}ml".format(**resources))
     print("\tCoffee: {coffee}g".format(**resources))
     print("\tMoney: ${money}".format(**resources))
 
 
-# Makes coffee, by calling resources_ok() and coins_ok() and reducing the resources by the amount needed to make coffee
 def make_coffee(choice):
+    """
+    Makes coffee, by calling resources_ok() and coins_ok() and
+    reducing the resources by the amount needed to make coffee
+    param choice:
+    """
     if resources_ok(choice) and coins_ok(choice):
         resources["water"] -= MENU[choice]["ingredients"]["water"]
         resources["milk"] -= MENU[choice]["ingredients"]["milk"]
@@ -79,9 +90,12 @@ def make_coffee(choice):
         resources["money"] += MENU[choice]["cost"]
 
 
-# Asks user for coins and makes sure there is enough, if so prints change and returns True,
-# otherwise prints that money is missing, returns False.
 def coins_ok(choice):
+    """
+    Asks user for coins and makes sure there is enough, if so prints change and returns True,
+    otherwise prints that money is missing, returns False.
+    :param choice:
+    """
     print("Please insert coins")
     quarters = int(input("\thow many quarters?: "))
     dimes = int(input("\thow many dimes?: "))
