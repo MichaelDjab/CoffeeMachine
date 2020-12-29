@@ -1,7 +1,9 @@
+# Types of coffee with data needed for machine functionality
 MENU = {
     "espresso": {
         "ingredients": {
             "water": 50,
+            "milk": 0,
             "coffee": 18,
         },
         "cost": 1.5,
@@ -24,6 +26,7 @@ MENU = {
     }
 }
 
+# Available resources in the coffee machine
 resources = {
     "water": 300,
     "milk": 200,
@@ -32,54 +35,83 @@ resources = {
 }
 
 
+# Refills the machine's resources, and collects money such that initial state is reinstated
+def refill_collect():
+    global resources
+    resources = {
+        "water": 300,
+        "milk": 200,
+        "coffee": 100,
+        "money": 0,
+    }
+    print("Machine filled up with resources, money collected.")
+
+
+# Checks if there are enough resources, if so return True, otherwise prints the first resource that
+# is missing and returns False
+def resources_ok(choice):
+    if resources["water"] < MENU[choice]["ingredients"]["water"]:
+        print("\tSorry there is not enough water.")
+        return False
+    if resources["milk"] < MENU[choice]["ingredients"]["milk"]:
+        print("\tSorry there is not enough milk.")
+        return False
+    if resources["coffee"] < MENU[choice]["ingredients"]["coffee"]:
+        print("\tSorry there is not enough coffee")
+        return False
+    return True
+
+
 # Print report that shows the current resource values
 def report():
-    print("Water: {water}ml".format(**resources))
-    print("Milk: {milk}ml".format(**resources))
-    print("Coffee: {coffee}g".format(**resources))
-    print("Money: ${money}".format(**resources))
+    print("\tWater: {water}ml".format(**resources))
+    print("\tMilk: {milk}ml".format(**resources))
+    print("\tCoffee: {coffee}g".format(**resources))
+    print("\tMoney: ${money}".format(**resources))
 
 
+# Makes coffee, by calling resources_ok() and coins_ok() and reducing the resources by the amount needed to make coffee
 def make_coffee(choice):
-    if coins_ok(choice):
+    if resources_ok(choice) and coins_ok(choice):
         resources["water"] -= MENU[choice]["ingredients"]["water"]
         resources["milk"] -= MENU[choice]["ingredients"]["milk"]
         resources["coffee"] -= MENU[choice]["ingredients"]["coffee"]
         resources["money"] += MENU[choice]["cost"]
-    report()
 
 
+# Asks user for coins and makes sure there is enough, if so prints change and returns True,
+# otherwise prints that money is missing, returns False.
 def coins_ok(choice):
     print("Please insert coins")
-    quarters = int(input("how many quarters?: "))
-    dimes = int(input("how many dimes?: "))
-    nickles = int(input("how many nickles?: "))
-    pennies = int(input("how many pennies?: "))
-
+    quarters = int(input("\thow many quarters?: "))
+    dimes = int(input("\thow many dimes?: "))
+    nickles = int(input("\thow many nickles?: "))
+    pennies = int(input("\thow many pennies?: "))
     total_inserted = quarters*0.25 + dimes*0.1 + nickles*0.05 + pennies*0.01
-
     # Not enough money inserted
     if total_inserted < MENU[choice]["cost"]:
-        print("sorry that's not enough money. Money refunded.")
+        print("\tsorry that's not enough money. Money refunded.")
         return False
     # Give back change
     else:
         change = round(100*(total_inserted - MENU[choice]["cost"]))/100.0
-        # TODO print 2 decimals
-        print(f"Here is ${change} in change.")
-        print(f"Here is your {choice} ☕️. Enjoy!")
+        print(f"\tHere is ${change} in change.")
+        print(f"\tHere is your {choice} ☕️. Enjoy!")
         return True
 
 
-# 1. Prompt user by asking “What would you like? (espresso/latte/cappuccino):”
-user_choice = input("What would you like? ($1.50 - espresso/$2.50 - latte/$3.00 - cappuccino):").lower()
-# 2. Turn off the Coffee Machine by entering “off” to the prompt.
-if user_choice == "off":
-    exit()
-# 3. Print report that shows the current resource values
-elif user_choice == "report":
-    report()
-elif user_choice == "espresso" or user_choice == "latte" or user_choice == "cappuccino":
-    make_coffee(user_choice)
-else:
-    print("Invalid choice, watch your spelling 😉")
+# Program starts here
+user_choice = ""
+while not user_choice == "off":
+    user_choice = input("What would you like? ($1.50 - espresso/$2.50 - latte/$3.00 - cappuccino):").lower()
+    # Turn off the Coffee Machine by entering “off” to the prompt.
+    if user_choice == "off":
+        break
+    elif user_choice == "report":
+        report()
+    elif user_choice == "espresso" or user_choice == "latte" or user_choice == "cappuccino":
+        make_coffee(user_choice)
+    elif user_choice == "refill":
+        refill_collect()
+    else:
+        print("\tInvalid choice, watch your spelling. 😉")
